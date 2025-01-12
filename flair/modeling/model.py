@@ -315,23 +315,15 @@ class VisionModel(torch.nn.Module):
 
         # Set vision encoder architecture and pretrained weights
         if vision_type == "resnet_v1" or vision_type == "resnet_v2":
+            # Set pretrained weights from Imagenet and get model
             if vision_type == "resnet_v1":
-                # Укажите путь к весам
-                weights_path = '/mnt/data/Anastasiia_Ponkratova/FLAIR/flair/modeling/flair_pretrained_weights/flair_resnet.pth'
-
-                if pretrained and os.path.exists(weights_path):
-                    print(f"Loading weights from: {weights_path}")
-                    self.model = torchvision.models.resnet50(weights=None)  # Инициализируем без весов
-                    state_dict = torch.load(weights_path, map_location='cpu')
-                    self.model.load_state_dict(state_dict)
-                else:
-                    print("Using default pretrained weights from torchvision.")
-                    weights = 'IMAGENET1K_V1' if pretrained else None
-                    self.model = torchvision.models.resnet50(weights=weights)
-
+                weights = 'IMAGENET1K_V1' if pretrained else None
             elif vision_type == "resnet_v2":
                 weights = 'IMAGENET1K_V2' if pretrained else None
-                self.model = torchvision.models.resnet50(weights=weights)
+            else:
+                weights = 'IMAGENET1K_V1' if pretrained else None
+            print("Pretrained weights: " + str(weights))
+            self.model = torchvision.models.resnet50(weights=weights)
             # Set number of extracted features
             self.vision_dim = 2048
             # Replace classifier by Identity layer
