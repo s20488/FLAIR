@@ -315,38 +315,39 @@ class VisionModel(torch.nn.Module):
 
         # Set vision encoder architecture and pretrained weights
         if vision_type == "resnet_v1" or vision_type == "resnet_v2":
-            # Set pretrained weights from Imagenet and get model
-            if vision_type == "resnet_v1":
-                # Укажите путь к локальным весам
-                weights_path = '/mnt/data/Anastasiia_Ponkratova/FLAIR/flair/modeling/flair_pretrained_weights/flair_resnet.pth'
-                print(f"Using ResNet50 with local weights: {weights_path}")
+            # Укажите путь к локальным весам
+            weights_path = '/mnt/data/Anastasiia_Ponkratova/FLAIR/flair/modeling/flair_pretrained_weights/flair_resnet.pth'
+            print(f"Using ResNet50 with local weights: {weights_path}")
 
-                # Инициализация модели без весов
-                self.model = torchvision.models.resnet50(weights=None)
+            # Инициализация модели без стандартных весов
+            self.model = torchvision.models.resnet50(weights=None)
 
-                # Проверяем, существуют ли веса и загружаем их
-                if pretrained and os.path.exists(weights_path):
-                    state_dict = torch.load(weights_path, map_location='cpu')
-                    self.model.load_state_dict(state_dict)
-                else:
-                    print("Pretrained weights not found. Using untrained ResNet50.")
-
-                # Set number of extracted features
-                self.vision_dim = 2048
-                # Replace classifier by Identity layer
-                self.model.fc = torch.nn.Identity()
-
-        elif vision_type == "efficientnet":
-            weights_path = '/mnt/data/Anastasiia_Ponkratova/FLAIR/flair/modeling/flair_pretrained_weights/efficientnet_weights.pth'
-            print(f"Using EfficientNet with local weights: {weights_path}")
-
-            self.model = torchvision.models.efficientnet_b7(weights=None)
-
-            if pretrained and os.path.exists(weights_path):
+            # Проверяем наличие весов и загружаем
+            if os.path.exists(weights_path):
                 state_dict = torch.load(weights_path, map_location='cpu')
                 self.model.load_state_dict(state_dict)
             else:
-                print("Pretrained weights not found. Using untrained EfficientNet.")
+                raise FileNotFoundError(f"Local weights not found at: {weights_path}. Please provide the correct path.")
+
+            # Set number of extracted features
+            self.vision_dim = 2048
+            # Replace classifier by Identity layer
+            self.model.fc = torch.nn.Identity()
+
+        elif vision_type == "efficientnet":
+            # Укажите путь к локальным весам
+            weights_path = '/mnt/data/Anastasiia_Ponkratova/FLAIR/flair/modeling/flair_pretrained_weights/efficientnet_weights.pth'
+            print(f"Using EfficientNet with local weights: {weights_path}")
+
+            # Инициализация модели без стандартных весов
+            self.model = torchvision.models.efficientnet_b7(weights=None)
+
+            # Проверяем наличие весов и загружаем
+            if os.path.exists(weights_path):
+                state_dict = torch.load(weights_path, map_location='cpu')
+                self.model.load_state_dict(state_dict)
+            else:
+                raise FileNotFoundError(f"Local weights not found at: {weights_path}. Please provide the correct path.")
 
             self.vision_dim = 2096
 
