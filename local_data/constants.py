@@ -5,7 +5,7 @@ This script contains relative or absolute paths for local data
 """
 
 # Path with datasets
-PATH_DATASETS = ".../Datasets/FUNDUS/"
+PATH_DATASETS = "/mnt/data/cfi"
 
 # Path with pretraining and transferability dataframes
 PATH_DATAFRAME_PRETRAIN = "./local_data/dataframes/pretraining/"
